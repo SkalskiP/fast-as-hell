@@ -1,0 +1,5 @@
+torch==1.6.0
+torchvision==0.7.0
+jupyterlab==2.2.9
+opencv-python==4.4.0.46
+tqdm==4.51.0
