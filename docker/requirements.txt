@@ -3,3 +3,9 @@ torchvision==0.7.0
 jupyterlab==2.2.9
 opencv-python==4.4.0.46
 tqdm==4.51.0
+matplotlib==3.3.2
+widgetsnbextension==3.5.1
+
+
+PyYAML==5.3.1
+scipy==1.5.4

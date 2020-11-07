@@ -1,3 +1,9 @@
+# PyCharm and mac and azure ml and VS Code files
+.idea
+.vscode
+.DS_Store
+.azureml
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
