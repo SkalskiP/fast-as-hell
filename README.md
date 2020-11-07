@@ -11,3 +11,7 @@ docker run -it \
 -v $PWD/data:/project/data \
 fast-as-hell:latest
 ```
+
+```bash
+jupyter notebook --ip=0.0.0.0 --allow-root --no-browser
+```
