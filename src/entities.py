@@ -40,6 +40,10 @@ class BoundingBox:
     def bottom_right(self) -> Tuple[int, int]:
         return int(self.x1), int(self.y1)
 
+    @property
+    def area(self) -> float:
+        return (self.x1 - self.x0) * (self.y1 - self.y0)
+
 
 @dataclass(frozen=True)
 class DetectedObject:

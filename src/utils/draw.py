@@ -1,14 +1,32 @@
-from typing import Tuple
+from typing import Tuple, Optional
 
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
 from src.entities import Image, BoundingBox, Color
+from src.utils.general import exists
 
 
-def draw_bounding_box(image: Image, bounding_box: BoundingBox, color: Color = (255, 255, 255), thickness: int = 2) -> Image:
+def draw_bounding_box(
+    image: Image,
+    bounding_box: BoundingBox,
+    color: Color = (255, 255, 255),
+    thickness: int = 2,
+    text: Optional[str] = None
+) -> Image:
     image = cv2.rectangle(image, bounding_box.top_left, bounding_box.bottom_right, color, thickness)
+    if exists(text):
+        image = cv2.putText(
+            img=image,
+            text=text,
+            org=(int(bounding_box.x0), int(bounding_box.y0) - 10),
+            fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+            fontScale=1,
+            color=color,
+            thickness=2,
+            lineType=cv2.LINE_AA
+        )
     return image
 
 
