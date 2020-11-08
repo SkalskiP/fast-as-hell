@@ -15,7 +15,7 @@ class InferenceEngine:
             verbose=False
         ).fuse().eval().autoshape()
         self.__model = model
-        self.__class_names = get_or_else(item=class_names, default=[])
+        self.__class_names = get_or_else(item=class_names, default=self.__model.names)
 
     def get_class_name(self, class_idx: ClassIdx) -> ClassName:
         return self.__model.names[class_idx]
@@ -34,5 +34,5 @@ class InferenceEngine:
                 )
                 for *bounding_box_values, confidence, cls
                 in result[0].numpy()
-                if (name := self.get_class_name(int(cls))) not in self.__class_names
+                if (name := self.get_class_name(int(cls))) in self.__class_names
             ]

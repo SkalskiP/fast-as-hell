@@ -3,6 +3,7 @@ from typing import Generator
 import cv2
 
 from src.entities import Frame
+from src.utils.general import exists
 
 
 class VideoSource:
@@ -17,12 +18,12 @@ class VideoSource:
         return self.__input_file
 
     def generate_frames(self) -> Generator[Frame, None, None]:
-        if self.__frame_index > 0:
+        if self.__frame_index > 0 or not exists(self.__video_capture):
             self.__load_video_source()
 
-        while self.__captured_video.isOpened():
-            status, image = self.__captured_video.read()
-            timestamp = self.__captured_video.get(cv2.CAP_PROP_POS_MSEC)
+        while self.__video_capture.isOpened():
+            status, image = self.__video_capture.read()
+            timestamp = self.__video_capture.get(cv2.CAP_PROP_POS_MSEC)
             if not status:
                 break
 
@@ -33,9 +34,9 @@ class VideoSource:
         self.__close_video_source()
 
     def __close_video_source(self) -> None:
-        self.__captured_video.release()
-        self.__captured_video = None
+        self.__video_capture.release()
+        self.__video_capture = None
 
     def __load_video_source(self) -> None:
-        self.__captured_video = cv2.VideoCapture(self.__input_file)
+        self.__video_capture = cv2.VideoCapture(self.__input_file)
         self.__frame_index = 0
