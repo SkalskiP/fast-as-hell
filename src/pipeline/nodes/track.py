@@ -15,6 +15,9 @@ class ObjectTracker:
         self.__objects_map = objects_map
         self.__objects_index = 0
 
+        # todo: Implement a better prediction stabilization mechanism
+        self.__objects_to_be_dropped = {}
+
     @classmethod
     def initialize(cls) -> ObjectTracker:
         return cls(objects_map={})
@@ -28,9 +31,19 @@ class ObjectTracker:
             if exists(index):
                 self.__objects_map[index] = next_object
                 del previous_object_map[index]
+                continue
+
+            # todo: Implement a better prediction stabilization mechanism
+            index = ObjectTracker.match_with_highest_iou(objects_map=self.__objects_to_be_dropped, next_object=next_object)
+            if exists(index):
+                self.__objects_map[index] = next_object
+                del self.__objects_to_be_dropped[index]
             else:
                 self.__objects_map[self.__objects_index] = next_object
                 self.__objects_index += 1
+
+        # todo: Implement a better prediction stabilization mechanism
+        self.__objects_to_be_dropped = previous_object_map
 
     @property
     def objects(self) -> ActiveObjectsMap:
