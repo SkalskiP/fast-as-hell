@@ -1,0 +1,2 @@
+class VideoWriterNotInitialized(Exception):
+    pass

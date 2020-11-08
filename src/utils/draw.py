@@ -22,7 +22,7 @@ def draw_bounding_box(
             text=text,
             org=(int(bounding_box.x0), int(bounding_box.y0) - 10),
             fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-            fontScale=1,
+            fontScale=0.8,
             color=color,
             thickness=2,
             lineType=cv2.LINE_AA

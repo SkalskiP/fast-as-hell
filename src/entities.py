@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 import numpy as np
 
@@ -15,6 +15,14 @@ class Frame:
     image: Image
     index: int
     timestamp: int
+
+
+@dataclass(frozen=True)
+class VideoConfig:
+    fps: float
+    width: int
+    height: int
+    frames_count: Optional[int] = None
 
 
 @dataclass(frozen=True)

@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from typing import List, Dict, Optional
 
-from src.entities import BoundingBox, DetectedObject
+from src.entities import DetectedObject
+from src.utils.general import exists
+from src.utils.iou import calculate_iou
 
 ActiveObjectsMap = Dict[int, DetectedObject]
 
@@ -18,29 +20,21 @@ class ObjectTracker:
         return cls(objects_map={})
 
     def submit_frame(self, objects: List[DetectedObject]) -> None:
-        self.__add_new_objects(objects=objects)
+        previous_object_map = self.__objects_map
+        self.__objects_map = {}
+
+        for next_object in objects:
+            index = ObjectTracker.match_with_highest_iou(objects_map=previous_object_map, next_object=next_object)
+            if exists(index):
+                self.__objects_map[index] = next_object
+                del previous_object_map[index]
+            else:
+                self.__objects_map[self.__objects_index] = next_object
+                self.__objects_index += 1
 
     @property
     def objects(self) -> ActiveObjectsMap:
         return self.__objects_map
-
-    def __add_new_objects(self, objects: List[DetectedObject]) -> None:
-        for next_object in objects:
-            self.__objects_map[self.__objects_index] = next_object
-            self.__objects_index += 1
-
-    @staticmethod
-    def calculate_iou(bounding_box_a: BoundingBox, bounding_box_b: BoundingBox) -> float:
-        bounding_box_a_cords = bounding_box_a.list
-        bounding_box_b_cords = bounding_box_b.list
-
-        x0 = max(bounding_box_a_cords[0], bounding_box_b_cords[0])
-        y0 = max(bounding_box_a_cords[1], bounding_box_b_cords[1])
-        x1 = min(bounding_box_a_cords[2], bounding_box_b_cords[2])
-        y1 = min(bounding_box_a_cords[3], bounding_box_b_cords[3])
-
-        intersection = max(0.0, x1 - x0) * max(0.0, y1 - y0)
-        return intersection / float(bounding_box_a.area + bounding_box_b.area - intersection)
 
     @staticmethod
     def match_with_highest_iou(objects_map: ActiveObjectsMap, next_object: DetectedObject) -> Optional[int]:
@@ -50,7 +44,7 @@ class ObjectTracker:
             if last_object.name != next_object.name:
                 continue
 
-            iou = ObjectTracker.calculate_iou(
+            iou = calculate_iou(
                 bounding_box_a=last_object.bounding_box, 
                 bounding_box_b=next_object.bounding_box
             )

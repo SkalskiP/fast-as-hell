@@ -2,7 +2,7 @@ from typing import Generator
 
 import cv2
 
-from src.entities import Frame
+from src.entities import Frame, VideoConfig
 from src.utils.general import exists
 
 
@@ -40,3 +40,14 @@ class VideoSource:
     def __load_video_source(self) -> None:
         self.__video_capture = cv2.VideoCapture(self.__input_file)
         self.__frame_index = 0
+
+    @property
+    def config(self) -> VideoConfig:
+        if not exists(self.__video_capture):
+            self.__load_video_source()
+        return VideoConfig(
+            fps=self.__video_capture.get(cv2.CAP_PROP_FPS),
+            width=int(self.__video_capture.get(cv2.CAP_PROP_FRAME_WIDTH)),
+            height=int(self.__video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT)),
+            frames_count=int(self.__video_capture.get(cv2.CAP_PROP_FRAME_COUNT))
+        )
