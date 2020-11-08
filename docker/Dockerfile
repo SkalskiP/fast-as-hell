@@ -2,7 +2,7 @@ FROM python:3.8
 
 COPY docker/requirements.txt /
 
-RUN RUN apt-get update && apt-get upgrade -y && apt-get install -y libgl1-mesa-glx && \
+RUN apt-get update && apt-get upgrade -y && apt-get install -y libgl1-mesa-glx && \
     pip install -r /requirements.txt && \
     jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
     mkdir -p /project
