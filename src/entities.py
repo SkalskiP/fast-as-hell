@@ -8,6 +8,8 @@ Image = np.array
 ClassName = str
 ClassIdx = int
 Color = Tuple[int, int, int]
+Point = Tuple[float, float]
+Rect = Tuple[Point, Point, Point, Point]
 
 
 @dataclass(frozen=True)
