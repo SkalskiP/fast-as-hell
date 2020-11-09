@@ -10,6 +10,7 @@ ClassIdx = int
 Color = Tuple[int, int, int]
 Point = Tuple[float, float]
 Rect = Tuple[Point, Point, Point, Point]
+Size = Tuple[float, float]
 
 
 @dataclass(frozen=True)
@@ -57,6 +58,10 @@ class BoundingBox:
     @property
     def area(self) -> float:
         return (self.x1 - self.x0) * (self.y1 - self.y0)
+
+    @property
+    def size(self) -> Size:
+        return self.x1 - self.x0, self.y1 - self.y0
 
 
 @dataclass(frozen=True)

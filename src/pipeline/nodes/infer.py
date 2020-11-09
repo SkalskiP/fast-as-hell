@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
 import torch
 
 from src.entities import Image, DetectedObject, ClassName, ClassIdx, BoundingBox
@@ -8,7 +8,11 @@ from src.utils.iou import calculate_iou
 
 class InferenceEngine:
 
-    def __init__(self, class_names: Optional[List[ClassName]] = None, threshold_iou: float = 0.9) -> None:
+    def __init__(
+        self, class_names: Optional[List[ClassName]] = None,
+        threshold_iou: float = 0.9,
+        threshold_object_dims: Tuple[int, int] = (30, 30)
+    ) -> None:
         model = torch.hub.load(
             github='ultralytics/yolov5',
             model='yolov5s',
@@ -18,6 +22,7 @@ class InferenceEngine:
         self.__model = model
         self.__class_names = get_or_else(item=class_names, default=self.__model.names)
         self.__threshold_iou = threshold_iou
+        self.__threshold_object_dims = threshold_object_dims
 
     def get_class_name(self, class_idx: ClassIdx) -> ClassName:
         return self.__model.names[class_idx]
@@ -42,6 +47,10 @@ class InferenceEngine:
     def post_process(self, objects: List[DetectedObject]) -> List[DetectedObject]:
         results = []
         for next_object in objects:
+            object_size = next_object.bounding_box.size
+            if object_size[0] < self.__threshold_object_dims[0] or object_size[1] < self.__threshold_object_dims[1]:
+                continue
+
             drop = False
             for result in results:
                 iou = calculate_iou(

@@ -26,7 +26,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    inference_engine = InferenceEngine(class_names=['car'])
+    inference_engine = InferenceEngine(class_names=['car', 'bus'])
     video_source = VideoSource(input_file=args.source_video_path)
     video_config = video_source.config
     tacker = ObjectTracker.initialize()
