@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import argparse
 
-import numpy as np
 import cv2
+import numpy as np
 
-from src.entities import Rect, Image
+from src.entities import Rect, Image, Point
 
 
 class ViewTransformer:
@@ -18,9 +18,10 @@ class ViewTransformer:
         target_np = np.array(target, dtype="float32")
         return cls(M=cv2.getPerspectiveTransform(source_np, target_np))
 
-    def transform_point(self, point: [float, float]) -> [float, float]:
-        point_3d = np.array(point[0], point[1], 1)
-        return self.__M.dot(point_3d)[:2]
+    def transform_point(self, point: Point) -> Point:
+        point_3d = np.array([point[0], point[1], 1])
+        transformed_point_3d = self.__M.dot(point_3d)
+        return np.true_divide(transformed_point_3d, transformed_point_3d[-1])[:2]
 
     def transform_image(self, image: Image, width: int, height: int) -> Image:
         return cv2.warpPerspective(image, self.__M, (width, height))

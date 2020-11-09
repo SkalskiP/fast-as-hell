@@ -51,6 +51,10 @@ class BoundingBox:
         return int(self.x1), int(self.y1)
 
     @property
+    def anchor(self) -> Point:
+        return (self.x0 + self.x1) / 2, self.y1
+
+    @property
     def area(self) -> float:
         return (self.x1 - self.x0) * (self.y1 - self.y0)
 
