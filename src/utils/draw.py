@@ -20,11 +20,11 @@ def draw_bounding_box(
         image = cv2.putText(
             img=image,
             text=text,
-            org=(int(bounding_box.x0), int(bounding_box.y0) - 5),
+            org=(int(bounding_box.x0), int(bounding_box.y0) - 8),
             fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-            fontScale=0.5,
+            fontScale=0.7,
             color=color,
-            thickness=thickness,
+            thickness=2,
             lineType=cv2.LINE_AA
         )
     return image

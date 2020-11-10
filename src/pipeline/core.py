@@ -65,7 +65,7 @@ class Pipeline:
             image = draw_bounding_box(
                 image=image,
                 bounding_box=data.bounding_box,
-                text=f"{data.name} id: {index} speed: {speed:.2f}km/h"
+                text=f"{data.name} | {speed:.0f} km/h"
             )
             anchor = data.bounding_box.anchor
             image = draw_bounding_box(
