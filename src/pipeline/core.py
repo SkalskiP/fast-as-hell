@@ -1,24 +1,21 @@
 from __future__ import annotations
 
 import argparse
-from typing import List, Optional
+from typing import List
 
 import numpy as np
 from tqdm import tqdm
-
-from copy import deepcopy
 
 from src.entities import Frame, Image, DetectedObject, TransformedObject, Rect, Point, BoundingBox
 from src.pipeline.config import TRACKED_CLASSES, SOURCE_RECT, TARGET_RECT
 from src.pipeline.nodes import ViewTransformer
 from src.pipeline.nodes.infer import InferenceEngine
-from src.pipeline.nodes.speed import calculate_speed
+from src.pipeline.nodes.speed import SpeedEstimator
 from src.pipeline.nodes.track import ObjectTracker
 from src.pipeline.nodes.visualize import ViewVisualizer
 from src.sources.video import VideoSource
 from src.targets.video import VideoTarget
 from src.utils.draw import draw_bounding_box
-from src.utils.general import exists
 
 
 class Pipeline:
@@ -27,6 +24,7 @@ class Pipeline:
         model: InferenceEngine,
         tracker: ObjectTracker,
         transformer: ViewTransformer,
+        estimator: SpeedEstimator,
         visualizer: ViewVisualizer,
         source_rect: Rect,
         target_rect: Rect
@@ -34,10 +32,10 @@ class Pipeline:
         self.__model = model
         self.__tracker = tracker
         self.__transformer = transformer
+        self.__estimator = estimator
         self.__visualizer = visualizer
         self.__source_rect = source_rect
         self.__target_rect = target_rect
-        self.__previous_frame: Optional[Frame] = None
 
     @classmethod
     def initialize_default(cls) -> Pipeline:
@@ -45,6 +43,7 @@ class Pipeline:
             model=InferenceEngine(class_names=TRACKED_CLASSES),
             tracker=ObjectTracker.initialize(),
             transformer=ViewTransformer.initialize(source=SOURCE_RECT, target=TARGET_RECT),
+            estimator=SpeedEstimator(),
             visualizer=ViewVisualizer.initialize_default(),
             source_rect=SOURCE_RECT,
             target_rect=TARGET_RECT
@@ -56,40 +55,30 @@ class Pipeline:
         transformed_objects = self.__transform(detected_objects=detected_objects)
         transformed_objects = self.__drop_objects_outside_target_rect(transformed_objects=transformed_objects)
 
-        prev_objects = deepcopy(self.__tracker.objects)
         self.__tracker.submit_frame(objects=transformed_objects)
         objects = self.__tracker.objects
+        self.__estimator.submit_frame(objects=objects, timestamp=frame.timestamp)
 
         image = self.__visualizer.draw(image=image)
-
-        if not exists(self.__previous_frame):
-            self.__previous_frame = frame
-        else:
-            for object_idx, object_data in objects.items():
-                if exists(prev_objects.get(object_idx)):
-                    prev_object_data = prev_objects.get(object_idx)
-                    speed = calculate_speed(
-                        start_ft=prev_object_data.position,
-                        end_ft=object_data.position,
-                        time_delta_ms=frame.timestamp - self.__previous_frame.timestamp
-                    )
-                    image = draw_bounding_box(
-                        image=image,
-                        bounding_box=object_data.bounding_box,
-                        text=f"{object_data.name} id: {object_idx} speed: {speed:.2f}km/h"
-                    )
-                    anchor = object_data.bounding_box.anchor
-                    image = draw_bounding_box(
-                        image=image,
-                        bounding_box=BoundingBox(
-                            x0=anchor[0] - 5,
-                            y0=anchor[1] - 5,
-                            x1=anchor[0] + 5,
-                            y1=anchor[1] + 5
-                        ),
-                        thickness=-1,
-                        color=(255, 255, 255)
-                    )
+        for index, data in objects.items():
+            speed = self.__estimator.get_speed(index=index)
+            image = draw_bounding_box(
+                image=image,
+                bounding_box=data.bounding_box,
+                text=f"{data.name} id: {index} speed: {speed:.2f}km/h"
+            )
+            anchor = data.bounding_box.anchor
+            image = draw_bounding_box(
+                image=image,
+                bounding_box=BoundingBox(
+                    x0=anchor[0] - 5,
+                    y0=anchor[1] - 5,
+                    x1=anchor[0] + 5,
+                    y1=anchor[1] + 5
+                ),
+                thickness=-1,
+                color=(255, 255, 255)
+            )
 
         return image
 

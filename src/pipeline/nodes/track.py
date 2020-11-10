@@ -11,15 +11,15 @@ ActiveObjectsMap = Dict[int, TransformedObject]
 
 class ObjectTracker:
 
-    def __init__(self, objects_map: ActiveObjectsMap, history_steps: int = 5) -> None:
+    def __init__(self, objects_map: ActiveObjectsMap, history_window_size: int = 5) -> None:
         self.__objects_map = objects_map
         self.__objects_index = 0
-        self.__history_steps = history_steps
+        self.__history_window_size = history_window_size
         self.__history = []
 
     @classmethod
-    def initialize(cls, history_steps: int = 5) -> ObjectTracker:
-        return cls(objects_map={}, history_steps=history_steps)
+    def initialize(cls, history_window_size: int = 5) -> ObjectTracker:
+        return cls(objects_map={}, history_window_size=history_window_size)
 
     def submit_frame(self, objects: List[TransformedObject]) -> None:
         prev_object_map = self.__objects_map
@@ -51,7 +51,7 @@ class ObjectTracker:
         self.__update_history(objects_map=prev_object_map)
 
     def __update_history(self, objects_map: ActiveObjectsMap) -> None:
-        self.__history = [objects_map] + self.__history[:self.__history_steps - 1]
+        self.__history = [objects_map] + self.__history[:self.__history_window_size - 1]
 
     @property
     def objects(self) -> ActiveObjectsMap:
