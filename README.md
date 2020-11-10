@@ -42,7 +42,9 @@ This module is responsible for reversing the perspective effect and mapping the 
 
 ### ObjectTracker
 
-The task of this module is very simple - matching objects found on the previous frame with those on the current one. Because the objects in the movie don't move too fast, we can use a rather naive approach - matching them by calculating the IoU of objects between frames. The assumption is as follows: an object on the current frame and an object from the previous frame that has high IoU are most likely the same object. As a result, ObjectTracker assigns each object an id, unique and unchangeable throughout the film.
+The task of this module is very simple - matching objects found on the previous frame with those on the current one. Because the objects in the movie don't move too fast, we can use a rather naive approach - matching them by calculating the IoU of objects between frames. The assumption is as follows: an object on the current frame and an object from the previous frame that has high IoU are most likely the same object. As a result, `ObjectTracker` assigns each object an id, unique and unchangeable throughout the film. 
+
+`ObjectTracker` is also resistant to disappearing objects - a problem that occurs when for some reason the model does not detect the object in the frame (false negative). In such a situation, we are dealing with a lack of continuity in the trajectory of the object's movement. However, potential gaps are filled by the `ObjectTracker`, up to the level of ***5*** consecutive lost frames.
 
 <p align="center"> 
     <img width="1000" src=".//data/examples/tracker.png">
@@ -52,7 +54,15 @@ The task of this module is very simple - matching objects found on the previous 
 
 ### SpeedEstimator
 
+To calculate the speed of vehicles, we use their coordinates obtained from perspective transformation. To eliminate the potential noise associated with object vibrations between frames and provide a more accurate value, `SpeedEstimator` uses a moving average calculated over the last 30 frames.
+
 ### ViewVisualizer
+
+Visualization of objects and region of interest on subsequent video frames. 
+
+## Example results
+
+The results obtained by running the pipeline on 2 sample videos can be found in `data/videos/tracking` directory.
 
 ## Hit the ground running
 
