@@ -28,16 +28,16 @@ The first two of these problems are handled by `ObjectTracker`, the last one by 
 This module is responsible for reversing the perspective effect and mapping the position of an object on a video frame of the position in the real world. For this purpose the functionality provided by OpenCV - perspectiveTransform - was used. The ViewTransformer class allows both mapping the image and the location of the selected point. The image transformation effect is presented below.
 
 <p align="center"> 
-    <img width="800" src=".//data/examples/raw_frame.png">
+    <img width="1000" src=".//data/examples/transformation.png">
 </p>
 
-**Figure 1.** Source video frame
+**Figure 1.** Source video frame - left. Transformed video frame - right.
 
 <p align="center"> 
-    <img width="150" src=".//data/examples/transformed_frame.png">
+    <img width="1000" src=".//data/examples/3d_vizualization.png">
 </p>
 
-**Figure 2.** Transformed video frame
+**Figure 2.** The coordinates obtained with the ViewTransformer can be placed on a chart to visualize the position of an object in the real world.
 
 ### ObjectTracker
 
