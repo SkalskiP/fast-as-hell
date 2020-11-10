@@ -11,13 +11,13 @@ The processing pipeline is composed of five basic elements:
 
 ### InferenceEngine
 
-To detect objects moving along the road I used state-of-the-art object detection model - [yolo5][1], implemented in PyTorch. I packed the whole thing in Python class to make it easier to use the model inside the pipeline. Prediction with this model is relatively fast and used implementation does not require a graphic card to run. The model provides high quality predictions, but from time to time there are problems that have been largely eliminated:
+To detect objects moving along the road I used state-of-the-art object detection model - [yolo5][1], implemented in ***PyTorch***. I packed the whole thing in Python class to make it easier to use the model inside the pipeline. Prediction with this model is relatively fast and used implementation does not require a graphic card to run. The model provides high quality predictions, but from time to time there are problems that have been largely eliminated:
 
 * **false positives** - the model detects objects where they do not exist
 * **false negatives** - the model does not detect objects even though they are visible
 * **duplication of objects** - the model provides multiple bounding boxes, representing the same object
 
-The first two of these problems are handled by ObjectTracker, the last one by InferenceEngine itself. To eliminate duplicate predictions, InferenceEngine calculates their ***Intersection over Union [IoU]*** and rejects objects whose IoU is greater than 0.9 with any of the already allowed objects. This operation is repeated for each frame.
+The first two of these problems are handled by `ObjectTracker`, the last one by InferenceEngine itself. To eliminate duplicate predictions, `InferenceEngine` calculates their ***Intersection over Union [IoU]*** and rejects objects whose IoU is greater than ***0.9*** with any of the already allowed objects. This operation is repeated for each frame.
 
 ### ViewTransformer
 
