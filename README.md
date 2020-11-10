@@ -17,6 +17,8 @@ To detect objects moving along the road I used state-of-the-art object detection
 * **false negatives** - the model does not detect objects even though they are visible
 * **duplication of objects** - the model provides multiple bounding boxes, representing the same object
 
+The first two of these problems are handled by ObjectTracker, the last one by InferenceEngine itself. To eliminate duplicate predictions, InferenceEngine calculates their ***Intersection over Union [IoU]*** and rejects objects whose IoU is greater than 0.9 with any of the already allowed objects. This operation is repeated for each frame.
+
 ### ViewTransformer
 
 ### ObjectTracker
