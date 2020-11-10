@@ -17,7 +17,7 @@ Size = Tuple[float, float]
 class Frame:
     image: Image
     index: int
-    timestamp: int
+    timestamp: float
 
 
 @dataclass(frozen=True)
@@ -69,3 +69,20 @@ class DetectedObject:
     name: ClassName
     confidence: float
     bounding_box: BoundingBox
+
+
+@dataclass(frozen=True)
+class TransformedObject:
+    name: ClassName
+    confidence: float
+    bounding_box: BoundingBox
+    position: Point
+
+    @classmethod
+    def from_detected_object(cls, detected_object: DetectedObject, position: Point) -> TransformedObject:
+        return cls(
+            name=detected_object.name,
+            confidence=detected_object.confidence,
+            bounding_box=detected_object.bounding_box,
+            position=position
+        )

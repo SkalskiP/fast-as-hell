@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import List, Dict, Optional
 
-from src.entities import DetectedObject
+from src.entities import TransformedObject
 from src.utils.general import exists
 from src.utils.iou import calculate_iou
 
-ActiveObjectsMap = Dict[int, DetectedObject]
+ActiveObjectsMap = Dict[int, TransformedObject]
 
 
 class ObjectTracker:
@@ -21,7 +21,7 @@ class ObjectTracker:
     def initialize(cls, history_steps: int = 5) -> ObjectTracker:
         return cls(objects_map={}, history_steps=history_steps)
 
-    def submit_frame(self, objects: List[DetectedObject]) -> None:
+    def submit_frame(self, objects: List[TransformedObject]) -> None:
         prev_object_map = self.__objects_map
         self.__objects_map = {}
 
@@ -58,7 +58,7 @@ class ObjectTracker:
         return self.__objects_map
 
     @staticmethod
-    def match_with_highest_iou(objects_map: ActiveObjectsMap, next_object: DetectedObject) -> Optional[int]:
+    def match_with_highest_iou(objects_map: ActiveObjectsMap, next_object: TransformedObject) -> Optional[int]:
         best_idx = None
         best_iou = 0
         for idx, last_object in objects_map.items():

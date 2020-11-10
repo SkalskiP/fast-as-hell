@@ -9,6 +9,7 @@ from src.entities import Rect, Image, Point
 
 
 class ViewTransformer:
+
     def __init__(self, M: np.array) -> None:
         self.__M = M
 

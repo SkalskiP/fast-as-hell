@@ -1,24 +1,26 @@
 TRACKED_CLASSES = [
-    'bicycle',
     'car',
     'motorcycle',
-    'bus',
-    'truck'
+    'bus'
 ]
 
-SOURCE_ROI = [
+# TL, TR, BR, BL
+SOURCE_RECT = [
     [183., 171.],
     [595., 188.],
-    [1480., 635.],
-    [88., 531.]
+    [1615., 700.],
+    [66., 570.]
 ]
 
-WIDTH = 99
-HEIGHT = 290
+WIDTH = 100
+HEIGHT = 300
 
-TARGET_ROI = [
+# TL, TR, BR, BL
+TARGET_RECT = [
     [0, 0],
     [WIDTH - 1, 0],
     [WIDTH - 1, HEIGHT - 1],
     [0, HEIGHT - 1]
 ]
+
+TRACKING_REGION_COLOR = (0, 255, 0)
