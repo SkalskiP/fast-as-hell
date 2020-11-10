@@ -1,4 +1,8 @@
-# fast-as-hell
+<h1 align="center">fast-as-hell</h1>
+
+<p align="center"> 
+    <img width="800" src=".//data/examples/result.gif">
+</p>
 
 ## Pipeline specification
 
@@ -20,6 +24,20 @@ To detect objects moving along the road I used state-of-the-art object detection
 The first two of these problems are handled by `ObjectTracker`, the last one by InferenceEngine itself. To eliminate duplicate predictions, `InferenceEngine` calculates their ***Intersection over Union [IoU]*** and rejects objects whose IoU is greater than ***0.9*** with any of the already allowed objects. This operation is repeated for each frame.
 
 ### ViewTransformer
+
+This module is responsible for reversing the perspective effect and mapping the position of an object on a video frame of the position in the real world. For this purpose the functionality provided by OpenCV - perspectiveTransform - was used. The ViewTransformer class allows both mapping the image and the location of the selected point. The image transformation effect is presented below.
+
+<p align="center"> 
+    <img width="800" src=".//data/examples/raw_frame.png">
+</p>
+
+**Figure 1.** Source video frame
+
+<p align="center"> 
+    <img width="150" src=".//data/examples/transformed_frame.png">
+</p>
+
+**Figure 2.** Transformed video frame
 
 ### ObjectTracker
 
