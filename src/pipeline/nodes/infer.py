@@ -39,7 +39,7 @@ class InferenceEngine:
                     bounding_box=BoundingBox.from_list(bounding_box_values=bounding_box_values)
                 )
                 for *bounding_box_values, confidence, cls
-                in result[0].numpy()
+                in result.pred[0].numpy()
                 if (name := self.get_class_name(int(cls))) in self.__class_names
             ])
 
