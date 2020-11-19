@@ -19,13 +19,16 @@ To detect objects moving along the road I used state-of-the-art object detection
 
 * **false positives** - the model detects objects where they do not exist
 * **false negatives** - the model does not detect objects even though they are visible
+* **vibrations of objects** - despite the fact that the object on the video is not moving, its location provided by the model (on different frames) is slightly change; such behavior causes the illusion of movement when it is not actually there
 * **duplication of objects** - the model provides multiple bounding boxes, representing the same object
 
-The first two of these problems are handled by `ObjectTracker`, the last one by InferenceEngine itself. To eliminate duplicate predictions, `InferenceEngine` calculates their ***Intersection over Union [IoU]*** and rejects objects whose IoU is greater than ***0.9*** with any of the already allowed objects. This operation is repeated for each frame.
+The first two of these problems are handled by `ObjectTracker`, third by `SpeedEstimator` and the last one by `InferenceEngine` itself. To eliminate duplicate predictions, `InferenceEngine` calculates their ***Intersection over Union [IoU]*** and rejects objects whose IoU is greater than ***0.9*** with any of the already allowed objects. This operation is repeated for each frame.
 
 ### ViewTransformer
 
-This module is responsible for reversing the perspective effect and mapping the position of an object on a video frame of the position in the real world. For this purpose the functionality provided by OpenCV - perspectiveTransform - was used. The ViewTransformer class allows both mapping the image and the location of the selected point. The image transformation effect is presented below.
+This module is responsible for reversing the perspective effect and mapping the position of an object on a video frame of the position in the real world. For this purpose the functionality provided by OpenCV - perspectiveTransform - was used. The ViewTransformer class allows both mapping the image and the location of the selected point. Information from this module is also used to filter out objects outside the area of interest - marked with a white polygon in the image below.
+
+The effect that could not be eliminated are small creases of space caused by the curvature of the camera lens (fishy eye effect). It is probably a matter of insufficiently calibrating the transformation matrix. However, the results obtained are satisfactory.
 
 <p align="center"> 
     <img width="1000" src=".//data/examples/transformation.png">
@@ -41,9 +44,29 @@ This module is responsible for reversing the perspective effect and mapping the 
 
 ### ObjectTracker
 
+The task of this module is very simple - matching objects found on the previous frame with those on the current one. Because the objects in the movie don't move too fast, we can use a rather naive approach - matching them by calculating the IoU of objects between frames. The assumption is as follows: an object on the current frame and an object from the previous frame that has high IoU are most likely the same object. As a result, `ObjectTracker` assigns each object an id, unique and unchangeable throughout the film. 
+
+`ObjectTracker` is also resistant to disappearing objects - a problem that occurs when for some reason the model does not detect the object in the frame (false negative). In such a situation, we are dealing with a lack of continuity in the trajectory of the object's movement. However, potential gaps are filled by the `ObjectTracker`, up to the level of ***5*** consecutive lost frames. 
+
+The solution used is not ideal and could be replaced by a more sophisticated algorithm like Kalman Filters, ROLO - Recurrent Yolo or Deep SORT. Despite its drawbacks, however, in this selected task it is doing good enough.
+
+<p align="center"> 
+    <img width="1000" src=".//data/examples/tracker.png">
+</p>
+
+**Figure 3.** Objects found on video, along with their id.
+
 ### SpeedEstimator
 
+To calculate the speed of vehicles, we use their coordinates obtained from perspective transformation. To eliminate the potential noise associated with object vibrations between frames and provide a more accurate value, `SpeedEstimator` uses a moving average calculated over the last 30 frames.
+
 ### ViewVisualizer
+
+Visualization of objects and region of interest on subsequent video frames. 
+
+## Example results
+
+The results obtained by running the pipeline on 2 sample videos can be found in `data/videos/tracking` directory.
 
 ## Hit the ground running
 
